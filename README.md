@@ -1,5 +1,5 @@
 # ZipCodeCompleter
-Example of using the Genero completer
+Example of using the Genero completer and zoom
 
 ## Getting Started
 **Download & Build**
@@ -7,8 +7,8 @@ Example of using the Genero completer
 - Compile and run that AddressApp application using the GBC
 
 ## Using the Zip Code Zoom and Completer
-The following code can be used to use the zip code zoom and completer in\
-your application
+The following code can be used to implement the zip code zoom and completer\
+in your application
 
 **Genero Implementation**
 ```genero
