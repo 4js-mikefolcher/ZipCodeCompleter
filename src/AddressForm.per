@@ -1,0 +1,32 @@
+LAYOUT
+	VBOX
+		GRID
+{
+<g "Address Entry"                                    >
+ ["First Name:    "][fld001                          ]
+ ["Last Name:     "][fld002                          ]
+ ["Street Address:"][fld003                          ]
+ ["City:          "][fld004                          ]
+ ["State:         "][fld005                          ]
+ ["Zip Code:      "][fld006   ]
+}
+		END --GRID
+	END --VBOX
+END --LAYOUT
+
+ATTRIBUTES
+
+	EDIT fld001 = formonly.first_name;
+	EDIT fld002 = formonly.last_name;
+	EDIT fld003 = formonly.street_addr;
+	EDIT fld004 = formonly.city, NOENTRY;
+	EDIT fld005 = formonly.state, NOENTRY;
+	BUTTONEDIT fld006 = formonly.zip_code, IMAGE="mag", ACTION=zoom, COMPLETER;
+
+END --ATTRIBUTES
+
+INSTRUCTIONS
+
+	SCREEN RECORD s_address (formonly.first_name THRU formonly.zip_code);
+
+END --INSTRUCTIONS

@@ -1,0 +1,53 @@
+LAYOUT
+	VBOX
+		GRID
+{
+<g "Search Criteria"                                                >
+ ["Zip Code: "][fld001  ]
+ ["City: "    ][fld002               ]
+ ["State: "   ][fld003               ]
+ ["County: "  ][fld004               ]
+}
+		END --GRID
+		TABLE (DOUBLECLICK=selected_row)
+{
+ Zip Code    City              State            County
+[col001     |col002           |col003          |col004            ]
+[col001     |col002           |col003          |col004            ]
+[col001     |col002           |col003          |col004            ]
+[col001     |col002           |col003          |col004            ]
+[col001     |col002           |col003          |col004            ]
+[col001     |col002           |col003          |col004            ]
+}
+		END --TABLE
+	END --VBOX
+END --LAYOUT
+
+ATTRIBUTES
+
+	EDIT fld001 = formonly.s_zip_code TYPE CHAR, COMPLETER;
+	EDIT fld002 = formonly.s_city TYPE VARCHAR, COMPLETER;
+	EDIT fld003 = formonly.s_state TYPE VARCHAR, COMPLETER;
+	EDIT fld004 = formonly.s_county TYPE VARCHAR, COMPLETER;
+
+	EDIT col001 = formonly.zip_code TYPE CHAR, SCROLL;
+	PHANTOM formonly.latitude TYPE DECIMAL;
+	PHANTOM formonly.longitude TYPE DECIMAL;
+	EDIT col002 = formonly.city TYPE VARCHAR, SCROLL;
+	PHANTOM formonly.state_id TYPE CHAR;
+	EDIT col003 = formonly.state_name TYPE VARCHAR, SCROLL;
+	PHANTOM formonly.zcta TYPE CHAR;
+	PHANTOM formonly.parent_zcta TYPE CHAR;
+	PHANTOM formonly.population TYPE INTEGER;
+	PHANTOM formonly.density TYPE FLOAT;
+	PHANTOM formonly.county_fips TYPE VARCHAR;
+	EDIT col004 = formonly.county_name TYPE VARCHAR, SCROLL;
+
+END --ATTRIBUTES
+
+INSTRUCTIONS
+
+	SCREEN RECORD s_zipcode (formonly.s_zip_code THRU formonly.s_county);
+	SCREEN RECORD s_zipcodes (formonly.zip_code THRU formonly.county_name);
+
+END --INSTRUCTIONS
