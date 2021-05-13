@@ -6,3 +6,4 @@
 *.4pwvs
 *.4pwdb
 *.DS_Store
+bin/
