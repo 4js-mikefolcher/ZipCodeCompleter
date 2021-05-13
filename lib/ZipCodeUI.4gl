@@ -5,6 +5,8 @@ DEFINE completeList DYNAMIC ARRAY OF TZipCode
 DEFINE filteredList DYNAMIC ARRAY OF TZipCode
 DEFINE searchText STRING
 
+CONSTANT cCompleterMax = 21
+
 PUBLIC FUNCTION buildZipCodeCache() RETURNS ()
 
 	CALL completeList.clear()
@@ -43,7 +45,7 @@ PUBLIC FUNCTION zipCodeCompleter(dlg ui.Dialog, zipCode STRING) RETURNS ()
 		IF fieldValue.subString(1, searchLength) == zipCode THEN
 			LET nxtIdx = nxtIdx + 1
 			LET refinedList[nxtIdx] = filteredList[idx]
-			IF nxtIdx <= 21 THEN
+			IF nxtIdx <= cCompleterMax THEN
 				--LET matchList[nxtIdx] = SFMT("%1 - %2, %3",
 				--	refinedList[nxtIdx].zip_code,
 				--	refinedList[nxtIdx].city,
