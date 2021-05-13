@@ -51,8 +51,9 @@ PRIVATE FUNCTION inputAddress() RETURNS ()
 					RETURNING search_zipcode.*
 				LET r_address.city = search_zipcode.city
 				LET r_address.state = search_zipcode.state_name
-				DISPLAY r_address.city TO s_address.city
-				DISPLAY r_address.state TO s_address.state
+            else
+                let r_address.city = null
+                let r_address.state = null
 			END IF
 
 		ON ACTION save ATTRIBUTES(TEXT="Save")

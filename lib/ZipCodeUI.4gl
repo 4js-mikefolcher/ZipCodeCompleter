@@ -3,8 +3,15 @@ IMPORT FGL ZipCodeModel
 
 DEFINE completeList DYNAMIC ARRAY OF TZipCode
 DEFINE filteredList DYNAMIC ARRAY OF TZipCode
-DEFINE searchText STRING
+DEFINE searchText string
 
+#+ Constant cCompleterMax
+#+
+#+ Sets the maximum number of occurences displayed by the completer feature -- limit is 50
+#+
+#+ @code
+#+ IF nxtIdx <= cCompleterMax THEN
+#+
 CONSTANT cCompleterMax = 21
 
 PUBLIC FUNCTION buildZipCodeCache() RETURNS ()
@@ -123,15 +130,21 @@ PUBLIC FUNCTION showZipCodeZoom() RETURNS (TZipCode)
 
 		DISPLAY ARRAY zoomRecs TO s_zipcodes.*
 			ON ACTION selected_row
-				LET idx = DIALOG.getCurrentRow("s_zipcodes")
-				LET selectedRec = zoomRecs[idx]
-				ACCEPT DIALOG
+                ACCEPT DIALOG
 		END DISPLAY
+
+         ON ACTION ACCEPT
+            ACCEPT dialog
 
 		ON ACTION CANCEL
 			INITIALIZE selectedRec.* TO NULL
-			EXIT DIALOG
+			EXIT dialog
 
+       
+        AFTER DIALOG
+            LET idx = DIALOG.getCurrentRow("s_zipcodes")
+            LET selectedRec = zoomRecs[idx]
+        
 	END DIALOG
 
 	CLOSE WINDOW zoomWindow
