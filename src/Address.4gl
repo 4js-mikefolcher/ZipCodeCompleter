@@ -1,6 +1,13 @@
 IMPORT FGL ZipCodeModel
 IMPORT FGL ZipCodeUI
 
+#+ This is the Adress type
+#+
+#+ Define variables with this type to hold address records.
+#+
+#+ @code
+#+ DEFINE r_address TAddress
+#+
 TYPE TAddress RECORD
 	first_name STRING,
 	last_name STRING,
@@ -8,8 +15,10 @@ TYPE TAddress RECORD
 	city STRING,
 	state STRING,
 	zip_code CHAR(5)
-END RECORD
+END record
 
+#+ Main
+#+
 MAIN
 
 	OPTIONS INPUT WRAP
@@ -20,8 +29,19 @@ MAIN
 
 	CLOSE WINDOW AddressForm
 
-END MAIN
+END main #Main
 
+#+ Input Address
+#+
+#+ This is an input function for adresses
+#+
+#+ @code
+#+ CALL inputAddress()
+#+
+#+ @param
+#+
+#+ @return
+#+
 PRIVATE FUNCTION inputAddress() RETURNS ()
 	DEFINE r_address TAddress
 	DEFINE search_zipcode TZipCode
@@ -51,9 +71,9 @@ PRIVATE FUNCTION inputAddress() RETURNS ()
 					RETURNING search_zipcode.*
 				LET r_address.city = search_zipcode.city
 				LET r_address.state = search_zipcode.state_name
-            else
-                let r_address.city = null
-                let r_address.state = null
+            ELSE
+                LET r_address.city = NULL
+                LET r_address.state = NULL
 			END IF
 
 		ON ACTION save ATTRIBUTES(TEXT="Save")
