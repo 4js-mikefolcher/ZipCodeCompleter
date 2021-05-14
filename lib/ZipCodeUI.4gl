@@ -1,12 +1,43 @@
+#+ This module implements ZipCode Lookup UI management
+#+
+#+ This module implements ZipCode Lookup UI management
+#+
+
 IMPORT util
 IMPORT FGL ZipCodeModel
 
+#+ Complete List of zipcodes
+#+
 DEFINE completeList DYNAMIC ARRAY OF TZipCode
-DEFINE filteredList DYNAMIC ARRAY OF TZipCode
-DEFINE searchText STRING
 
+#+ Current filtered list of zipcodes
+#+
+DEFINE filteredList DYNAMIC ARRAY OF TZipCode
+
+#+ Current search critera for a zipcode
+#+
+DEFINE searchText string
+
+#+ Constant cCompleterMax
+#+
+#+ Sets the maximum number of occurences displayed by the completer feature for the filtered list of ZipCodes -- limit is 50
+#+
+#+ @code
+#+ IF nxtIdx <= cCompleterMax THEN
+#+
 CONSTANT cCompleterMax = 21
 
+#+ Build zipcode cache
+#+
+#+ Initializes the current filtered/cached zipcode list
+#+
+#+ @code
+#+ CALL buildZipCodeCache()
+#+
+#+ @param
+#+
+#+ @return
+#+
 PUBLIC FUNCTION buildZipCodeCache() RETURNS ()
 
 	CALL completeList.clear()
@@ -17,6 +48,17 @@ PUBLIC FUNCTION buildZipCodeCache() RETURNS ()
 
 END FUNCTION #buildZipCodeCache
 
+#+ Flush zipcode cache
+#+
+#+ Resets the current filtered/cached zipcode list
+#+
+#+ @code
+#+ 	CALL flushZipCodeCache()
+#+
+#+ @param
+#+
+#+ @return
+#+
 PUBLIC FUNCTION flushZipCodeCache() RETURNS ()
 
 	CALL completeList.clear()
@@ -25,6 +67,19 @@ PUBLIC FUNCTION flushZipCodeCache() RETURNS ()
 
 END FUNCTION #flushZipCodeCache
 
+#+ Zipcode completer
+#+
+#+ Manages the ongoing filtered list associated with the completer attribute + on change logic 
+#+
+#+ @code
+#+ 	ON CHANGE zip_code
+#+	    CALL zipCodeCompleter(DIALOG, r_address.zip_code)
+#+
+#+ @param dlg current dialog object
+#+ @param zipCode current zipcode search criteria
+#+
+#+ @return
+#+
 PUBLIC FUNCTION zipCodeCompleter(dlg ui.Dialog, zipCode STRING) RETURNS ()
 	DEFINE searchLength INTEGER
 	DEFINE idx INTEGER = 0
@@ -69,6 +124,18 @@ PUBLIC FUNCTION zipCodeCompleter(dlg ui.Dialog, zipCode STRING) RETURNS ()
 
 END FUNCTION #zipCodeCompleter
 
+#+ Get zipcode record
+#+
+#+ Retrieves all info associated with the final zipcode found into a record  
+#+
+#+ @code
+#+ 	IF LENGTH(r_address.zip_code CLIPPED) == 5 THEN
+#+	    CALL getZipCodeRec(r_address.zip_code) RETURNING search_zipcode.*
+#+
+#+ @param p_zone_code final complete uniquely found zipcode
+#+
+#+ @return r_zipcode complete record info associated with the final zipcode found
+#+
 PUBLIC FUNCTION getZipCodeRec(p_zone_code CHAR(5)) RETURNS (TZipCode)
 	DEFINE r_zipcode TZipCode
 	DEFINE idx INTEGER
@@ -92,6 +159,19 @@ PUBLIC FUNCTION getZipCodeRec(p_zone_code CHAR(5)) RETURNS (TZipCode)
 
 END FUNCTION #getZipCodeRec
 
+#+ Show zipcode zoom
+#+
+#+ Displays a popup/lookup and manages the dialog block (input + display array) that allows the user to filter on zipcodes
+#+
+#+ @code
+#+ 		ON ACTION zoom
+#+			IF INFIELD(zip_code) THEN
+#+				CALL showZipCodeZoom() RETURNING search_zipcode.*
+#+
+#+ @param
+#+
+#+ @return selectedRec selected record
+#+
 PUBLIC FUNCTION showZipCodeZoom() RETURNS (TZipCode)
 	DEFINE selectedRec TZipCode
 	DEFINE searchRec TZipCode
@@ -107,31 +187,27 @@ PUBLIC FUNCTION showZipCodeZoom() RETURNS (TZipCode)
 
 		INPUT searchRec.zip_code, searchRec.city, searchRec.state_name, searchRec.county_name
 		FROM s_zipcode.*
-			ON CHANGE s_zip_code
-				CALL zoomRecs.clear()
-				LET zoomRecs = filterArray(searchRec.*)
-			ON CHANGE s_city
-				CALL zoomRecs.clear()
-				LET zoomRecs = filterArray(searchRec.*)
-			ON CHANGE s_state
-				CALL zoomRecs.clear()
-				LET zoomRecs = filterArray(searchRec.*)
-			ON CHANGE s_county
-				CALL zoomRecs.clear()
+			ON CHANGE s_zip_code, s_city, s_state, s_county
 				LET zoomRecs = filterArray(searchRec.*)
 		END INPUT
 
 		DISPLAY ARRAY zoomRecs TO s_zipcodes.*
 			ON ACTION selected_row
-				LET idx = DIALOG.getCurrentRow("s_zipcodes")
-				LET selectedRec = zoomRecs[idx]
-				ACCEPT DIALOG
+                ACCEPT DIALOG
 		END DISPLAY
+
+         ON ACTION ACCEPT
+            ACCEPT dialog
 
 		ON ACTION CANCEL
 			INITIALIZE selectedRec.* TO NULL
-			EXIT DIALOG
+			EXIT dialog
 
+       
+        AFTER DIALOG
+            LET idx = DIALOG.getCurrentRow("s_zipcodes")
+            LET selectedRec = zoomRecs[idx]
+        
 	END DIALOG
 
 	CLOSE WINDOW zoomWindow
@@ -140,6 +216,18 @@ PUBLIC FUNCTION showZipCodeZoom() RETURNS (TZipCode)
 
 END FUNCTION #showZipCodeZoom
 
+#+ Filter array
+#+
+#+ Logic that filters the array on the go as the user input criterias 
+#+
+#+ @code
+#+ 		ON CHANGE s_zip_code, s_city, s_state, s_county
+#+		    LET zoomRecs = filterArray(searchRec.*)
+#+
+#+ @param r_zipcode current searching criterias in the associated input subdialog
+#+
+#+ @return filteredArray current filtered array of zipcodes
+#+
 PRIVATE FUNCTION filterArray(r_zipcode TZipCode) RETURNS (DYNAMIC ARRAY OF TZipCode)
 	DEFINE filteredArray DYNAMIC ARRAY OF TZipCode
 	DEFINE idx INTEGER

@@ -1,6 +1,19 @@
+#+ This module implements ZipCode Model Types and functions
+#+
+#+ This module implements ZipCode Model Types and functions
+#+
+
 IMPORT os
 IMPORT util
 
+#+ This is the ZipCode type
+#+
+#+ Define variables or arrays with this type to hold Zipcode detailled records.
+#+
+#+ @code
+#+ 	DEFINE zipCodeList DYNAMIC ARRAY OF TZipCode
+#+	DEFINE r_zipcode TZipCode
+#+
 PUBLIC TYPE TZipCode RECORD
 	zip_code CHAR(5),
 	latitude DECIMAL(10,6),
@@ -14,8 +27,19 @@ PUBLIC TYPE TZipCode RECORD
 	density FLOAT,
 	county_fips CHAR(5),
 	county_name STRING
-END RECORD
+END record
 
+#+ Load zipcodes
+#+
+#+ Load ALL zipcodes from a csv file
+#+
+#+ @code
+#+ LET completeList = ZipCodeModel.loadZipCodes()
+#+
+#+ @param
+#+
+#+ @return zipCodeList a dynamic array of zipcodes
+#+
 PUBLIC FUNCTION loadZipCodes() RETURNS DYNAMIC ARRAY OF TZipCode
 	DEFINE zipCodeList DYNAMIC ARRAY OF TZipCode
 	DEFINE r_zipcode TZipCode
@@ -50,6 +74,18 @@ PUBLIC FUNCTION loadZipCodes() RETURNS DYNAMIC ARRAY OF TZipCode
 
 END FUNCTION #loadZipCodes
 
+#+ Initialize from CSV file
+#+
+#+ Method that reads a line from a CSV and loads a new record entry for the zipcode array
+#+
+#+ @code
+#+ WHILE (fileLine := channel.readLine()) IS NOT NULL
+#+  CALL r_zipcode.initFromCSV(fileLine)
+#+
+#+ @param csvLine source file line
+#+
+#+ @return
+#+
 PUBLIC FUNCTION (self TZipCode) initFromCSV(csvLine STRING) RETURNS ()
 	DEFINE parser base.StringTokenizer
 	DEFINE fieldValue base.StringBuffer
@@ -92,6 +128,17 @@ PUBLIC FUNCTION (self TZipCode) initFromCSV(csvLine STRING) RETURNS ()
 
 END FUNCTION #initFromCSV
 
+#+ TZipCode isEmpty method
+#+
+#+ Method that checks if the final desired zipcode is finally found (or not yet in that case)
+#+
+#+ @code
+#+ IF NOT search_zipcode.isEmpty() THEN
+#+
+#+ @param
+#+
+#+ @return
+#+
 PUBLIC FUNCTION (self TZipCode) isEmpty() RETURNS BOOLEAN
 
 	RETURN (self.zip_code IS NULL)
