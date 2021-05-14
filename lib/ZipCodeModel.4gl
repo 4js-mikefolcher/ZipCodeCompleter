@@ -27,7 +27,7 @@ PUBLIC TYPE TZipCode RECORD
 	density FLOAT,
 	county_fips CHAR(5),
 	county_name STRING
-END record
+END RECORD
 
 #+ Load zipcodes
 #+

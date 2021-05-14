@@ -24,9 +24,6 @@ ON ACTION zoom
 	                LET r_address.zip_code = search_zipcode.zip_code
 			LET r_address.city = search_zipcode.city
 			LET r_address.state = search_zipcode.state_name
-			DISPLAY r_address.zip_code TO s_address.zip_code
-			DISPLAY r_address.city TO s_address.city
-			DISPLAY r_address.state TO s_address.state
 		END IF
 	END IF
 
@@ -38,8 +35,6 @@ ON CHANGE zip_code
                         RETURNING search_zipcode.*
 	        LET r_address.city = search_zipcode.city
 	        LET r_address.state = search_zipcode.state_name
-	        DISPLAY r_address.city TO s_address.city
-	        DISPLAY r_address.state TO s_address.state
 	END IF
 
 ```

@@ -15,7 +15,7 @@ TYPE TAddress RECORD
 	city STRING,
 	state STRING,
 	zip_code CHAR(5)
-END record
+END RECORD
 
 #+ Main
 #+
@@ -58,9 +58,6 @@ PRIVATE FUNCTION inputAddress() RETURNS ()
 					LET r_address.zip_code = search_zipcode.zip_code
 					LET r_address.city = search_zipcode.city
 					LET r_address.state = search_zipcode.state_name
-					DISPLAY r_address.zip_code TO s_address.zip_code
-					DISPLAY r_address.city TO s_address.city
-					DISPLAY r_address.state TO s_address.state
 				END IF
 			END IF
 
@@ -71,9 +68,9 @@ PRIVATE FUNCTION inputAddress() RETURNS ()
 					RETURNING search_zipcode.*
 				LET r_address.city = search_zipcode.city
 				LET r_address.state = search_zipcode.state_name
-            ELSE
-                LET r_address.city = NULL
-                LET r_address.state = NULL
+			ELSE
+				LET r_address.city = NULL
+				LET r_address.state = NULL
 			END IF
 
 		ON ACTION save ATTRIBUTES(TEXT="Save")
