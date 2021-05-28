@@ -135,12 +135,31 @@ END FUNCTION #initFromCSV
 #+ @code
 #+ IF NOT search_zipcode.isEmpty() THEN
 #+
-#+ @param
-#+
-#+ @return
+#+ @return TRUE if the record has a NULL zip_code, otherwise FALSE
 #+
 PUBLIC FUNCTION (self TZipCode) isEmpty() RETURNS BOOLEAN
 
 	RETURN (self.zip_code IS NULL)
 
 END FUNCTION #isEmpty
+
+#+ TZipCode Converts the Record to a String
+#+
+#+ This function converts the TZipCode record to a string of the form [zipcode] - [city], [state id]
+#+
+#+ @code
+#+ LET zip_search = r_zipcode.toString()
+#+
+#+ @param
+#+
+#+ @return String in the form [zipcode] - [city], [state id]
+#+
+PUBLIC FUNCTION (self TZipCode) toString() RETURNS STRING
+
+	IF self.isEmpty() THEN
+		RETURN ""
+	END IF
+
+	RETURN SFMT("%1 - %2, %3", self.zip_code, self.city, self.state_id)
+
+END FUNCTION #toString

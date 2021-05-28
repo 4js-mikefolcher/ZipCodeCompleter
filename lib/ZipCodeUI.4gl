@@ -14,6 +14,9 @@ DEFINE completeList DYNAMIC ARRAY OF TZipCode
 #+
 DEFINE filteredList DYNAMIC ARRAY OF TZipCode
 
+#+ Dictionary of zipcodes, the key is the composit string of the record
+DEFINE compositDict DICTIONARY OF TZipCode
+
 #+ Current search critera for a zipcode
 #+
 DEFINE searchText string
@@ -39,12 +42,19 @@ CONSTANT cCompleterMax = 21
 #+ @return
 #+
 PUBLIC FUNCTION buildZipCodeCache() RETURNS ()
+	DEFINE idx INTEGER
 
 	CALL completeList.clear()
+	CALL compositDict.clear()
 	LET completeList = ZipCodeModel.loadZipCodes()
 	CALL completeList.sort("zip_code", FALSE)
 	CALL completeList.copyTo(filteredList)
 	LET searchText = NULL
+
+	#Build the search dictionary
+	FOR idx = 1 TO completeList.getLength()
+		LET compositDict[completeList[idx].toString()] = completeList[idx]
+	END FOR
 
 END FUNCTION #buildZipCodeCache
 
@@ -62,6 +72,7 @@ END FUNCTION #buildZipCodeCache
 PUBLIC FUNCTION flushZipCodeCache() RETURNS ()
 
 	CALL completeList.clear()
+	CALL compositDict.clear()
 	CALL filteredList.clear()
 	LET searchText = NULL
 
@@ -87,28 +98,36 @@ PUBLIC FUNCTION zipCodeCompleter(dlg ui.Dialog, zipCode STRING) RETURNS ()
 	DEFINE refinedList DYNAMIC ARRAY OF TZipCode
 	DEFINE matchList DYNAMIC ARRAY OF STRING
 	DEFINE nxtIdx INTEGER = 0
+	DEFINE charSearch BOOLEAN = FALSE
 
 	LET zipCode = zipCode.trim()
 	IF searchText IS NOT NULL AND zipCode.getIndexOf(searchText, 1) != 1 THEN
 		CALL completeList.copyTo(filteredList)
 	END IF
 
+	IF zipCode MATCHES "[A-Za-z]*" THEN
+		LET charSearch = TRUE
+	END IF
+
 	LET searchLength = zipCode.getLength()
 	FOR idx = 1 TO filteredList.getLength()
 
-		LET fieldValue = filteredList[idx].zip_code
+		IF charSearch THEN
+			#Search by city
+			LET fieldValue = filteredList[idx].city
+		ELSE
+			#Search by zip code
+			LET fieldValue = filteredList[idx].zip_code
+		END IF
+
 		IF fieldValue.subString(1, searchLength) == zipCode THEN
 			LET nxtIdx = nxtIdx + 1
 			LET refinedList[nxtIdx] = filteredList[idx]
 			IF nxtIdx <= cCompleterMax THEN
-				--LET matchList[nxtIdx] = SFMT("%1 - %2, %3",
-				--	refinedList[nxtIdx].zip_code,
-				--	refinedList[nxtIdx].city,
-				--	refinedList[nxtIdx].state_id)
-				LET matchList[nxtIdx] = refinedList[nxtIdx].zip_code
+				LET matchList[nxtIdx] = refinedList[nxtIdx].toString()
 			END IF
 		ELSE
-			IF refinedList.getLength() > 0 THEN
+			IF refinedList.getLength() > 0 AND NOT charSearch THEN
 				EXIT FOR
 			END IF
 		END IF
@@ -294,3 +313,26 @@ PRIVATE FUNCTION filterArray(r_zipcode TZipCode) RETURNS (DYNAMIC ARRAY OF TZipC
 	RETURN filteredArray
 
 END FUNCTION #filterArray
+
+#+ Get zipcode record from composit string
+#+
+#+ Retrieves and returns the TZipCode record that corresponds to the composit string
+#+
+#+ @code
+#+ LET r_zipcode = getZipCodeRecFromString(zip_search)
+#+
+#+ @param p_zone_code composit string in the form [zip code] - [city], [state id]
+#+
+#+ @return r_zipcode complete record info associated with the parameter
+#+
+PUBLIC FUNCTION getZipCodeRecFromString(p_zip_search STRING) RETURNS (TZipCode)
+	DEFINE r_zipcode TZipCode
+
+	IF compositDict.contains(p_zip_search) THEN
+		RETURN compositDict[p_zip_search].*
+	END IF
+
+	INITIALIZE r_zipcode.* TO NULL
+	RETURN r_zipcode.*
+
+END FUNCTION #getZipCodeRecFromString
