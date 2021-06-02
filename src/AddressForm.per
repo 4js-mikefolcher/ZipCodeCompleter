@@ -2,14 +2,14 @@ LAYOUT
 	VBOX
 		GRID
 {
-<g "Address Entry"                                      >
+<g "Address Entry"                                                  >
  ["First Name:    "][fld001                          ]
  ["Last Name:     "][fld002                          ]
  ["Street Address:"][fld003                          ]
  ["City:          "][fld004                          ]
  ["State:         "][fld005                          ]
- ["Zip Code:      "][fld006                            ]
-                    [lbl007  ]
+ ["Zip Code:      "][fld006                            ][lbl006  ]
+ ["Email Address: "][fld007                          ]
 }
 		END --GRID
 	END --VBOX
@@ -17,18 +17,26 @@ END --LAYOUT
 
 ATTRIBUTES
 
-	EDIT fld001 = formonly.first_name;
-	EDIT fld002 = formonly.last_name;
-	EDIT fld003 = formonly.street_addr;
+	EDIT fld001 = formonly.first_name, TABINDEX=1;
+	EDIT fld002 = formonly.last_name, TABINDEX=2;
+	EDIT fld003 = formonly.street_addr, TABINDEX=3;
 	EDIT fld004 = formonly.city, NOENTRY;
 	EDIT fld005 = formonly.state, NOENTRY;
-	BUTTONEDIT fld006 = formonly.zip_code_search, IMAGE="mag", ACTION=zoom, COMPLETER;
-	LABEL lbl007 = formonly.zip_code, HIDDEN;
+	BUTTONEDIT fld006 = formonly.zip_code_search, IMAGE="mag", ACTION=zoom, COMPLETER, TABINDEX=4;
+	LABEL lbl006 = formonly.zip_code, HIDDEN;
+	EDIT fld007 = formonly.email_addr, TABINDEX=5;
 
 END --ATTRIBUTES
 
 INSTRUCTIONS
 
-	SCREEN RECORD s_address (formonly.first_name THRU formonly.zip_code);
+	SCREEN RECORD s_address (formonly.first_name THRU formonly.email_addr);
+	SCREEN RECORD s1_address (formonly.first_name,
+									  formonly.last_name,
+									  formonly.street_addr,
+									  formonly.city,
+									  formonly.state,
+									  formonly.zip_code
+									  );
 
 END --INSTRUCTIONS
