@@ -90,6 +90,21 @@ PRIVATE FUNCTION inputAddress() RETURNS ()
 				END IF
 			END IF
 
+		BEFORE FIELD first_name, last_name, street_addr, zip_code_search, email_addr
+			CASE
+				WHEN INFIELD(first_name)
+					DISPLAY "In field first_name"
+				WHEN INFIELD(last_name)
+					DISPLAY "In field last_name"
+				WHEN INFIELD(street_addr)
+					DISPLAY "In field street_addr"
+				WHEN INFIELD(zip_code_search)
+					DISPLAY "In field zip_code_search"
+				WHEN INFIELD(email_addr)
+					DISPLAY "In field email_addr"
+			END CASE
+			DISPLAY SFMT("Current Item: %1", DIALOG.getCurrentItem())
+
 		ON ACTION save ATTRIBUTES(TEXT="Save")
 			ACCEPT INPUT
 
@@ -131,6 +146,21 @@ PRIVATE FUNCTION constructAddress() RETURNS ()
 				formonly.state, formonly.zip_code
 			FROM s1_address.*
 
+			BEFORE FIELD first_name, last_name, street_addr, city, state
+				CASE
+					WHEN INFIELD(first_name)
+						DISPLAY "In field first_name"
+					WHEN INFIELD(last_name)
+						DISPLAY "In field last_name"
+					WHEN INFIELD(street_addr)
+						DISPLAY "In field street_addr"
+					WHEN INFIELD(city)
+						DISPLAY "In field city"
+					WHEN INFIELD(state)
+						DISPLAY "In field state"
+				END CASE
+				DISPLAY SFMT("Current Item: %1", DIALOG.getCurrentItem())
+
 		END CONSTRUCT
 
 		INPUT zip_code_search FROM formonly.zip_code_search
@@ -153,27 +183,39 @@ PRIVATE FUNCTION constructAddress() RETURNS ()
 					END IF
 				END IF
 
-			END INPUT
+			BEFORE FIELD zip_code_search
+				IF INFIELD(zip_code_search) THEN
+					DISPLAY "In field zip_code_search"
+				END IF
+				DISPLAY SFMT("Current Item: %1", DIALOG.getCurrentItem())
+
+		END INPUT
 
 		CONSTRUCT wherePart2 ON
 				formonly.email_addr
 			FROM formonly.email_addr
 
+			BEFORE FIELD email_addr
+				IF INFIELD(email_addr) THEN
+						DISPLAY "In field email_addr"
+				END IF
+				DISPLAY SFMT("Current Item: %1", DIALOG.getCurrentItem())
+
 		END CONSTRUCT
 
-			ON ACTION ACCEPT
-				ACCEPT DIALOG
+		ON ACTION ACCEPT
+			ACCEPT DIALOG
 
-			ON ACTION CANCEL
-				LET int_flag = TRUE
-				EXIT DIALOG
+		ON ACTION CANCEL
+			LET int_flag = TRUE
+			EXIT DIALOG
 
-			AFTER DIALOG
-				IF search_zipcode.isEmpty() THEN
-					DISPLAY zip_code_search TO formonly.zip_code
-				ELSE
-					DISPLAY search_zipcode.zip_code TO formonly.zip_code
-				END IF
+		AFTER DIALOG
+			IF search_zipcode.isEmpty() THEN
+				DISPLAY zip_code_search TO formonly.zip_code
+			ELSE
+				DISPLAY search_zipcode.zip_code TO formonly.zip_code
+			END IF
 
 	END DIALOG
 
