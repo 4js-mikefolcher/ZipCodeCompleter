@@ -25,7 +25,7 @@ MAIN
 
 	OPTIONS INPUT WRAP
 
-	OPEN WINDOW AddressForm WITH FORM "AddressForm"
+	OPEN WINDOW AddressForm WITH FORM "AddressForm" ATTRIBUTES (TEXT="Address")
 
 	MENU "Select a Statement"
 		COMMAND "Input"
